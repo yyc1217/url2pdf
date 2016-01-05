@@ -1,11 +1,13 @@
 package cc.ncu.htmltopdf.controller;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cc.ncu.htmltopdf.domain.PDFFileRequest;
@@ -18,7 +20,13 @@ public class FromUrlController {
 	private IPdfConverter pdfConverter;
 
 	@RequestMapping(value = "/fromUrl", method = RequestMethod.GET)
-	void createPdf(HttpServletResponse response, @RequestParam PDFFileRequest fileRequest) {
-		pdfConverter.writePdfToResponse(fileRequest, response);
+	void createPdf(HttpServletResponse response, @Valid @ModelAttribute PDFFileRequest fileRequest, BindingResult result) {
+		
+		if (result.hasErrors()) {
+			// TODO show error messages
+			throw new RuntimeException(result.toString());
+		}
+		
+		this.pdfConverter.writePdfToResponse(fileRequest, response);
 	}
 }
