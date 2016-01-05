@@ -7,6 +7,8 @@ import org.springframework.util.StringUtils;
 
 public class PDFFileRequest {
 	
+    private static final String DEFAULT_FILENAME = "result.pdf";
+    
 	@NotNull
 	private String target;
 	
@@ -14,7 +16,7 @@ public class PDFFileRequest {
 	private String filename;
 
 	public PDFFileRequest() {
-		this.filename = "converted.pdf";
+		this.filename = DEFAULT_FILENAME;
 	}
 
 	public String getTarget() {
@@ -33,7 +35,11 @@ public class PDFFileRequest {
 		
 		this.filename = filename;
 		
-		String extension = StringUtils.getFilenameExtension(filename);
+		if (!StringUtils.hasText(filename)) {
+		    this.filename = DEFAULT_FILENAME;
+		}
+		
+		String extension = StringUtils.getFilenameExtension(this.filename);
 		if (!"pdf".equalsIgnoreCase(extension)) {
 			this.filename += ".pdf";
 		}

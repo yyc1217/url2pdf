@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import cc.ncu.htmltopdf.domain.PDFFileRequest;
+import cc.ncu.htmltopdf.exception.BadParameterException;
 import cc.ncu.htmltopdf.service.IPdfConverter;
 
 @RestController
@@ -23,8 +24,7 @@ public class FromUrlController {
 	void createPdf(HttpServletResponse response, @Valid @ModelAttribute PDFFileRequest fileRequest, BindingResult result) {
 		
 		if (result.hasErrors()) {
-			// TODO show error messages
-			throw new RuntimeException(result.toString());
+			throw new BadParameterException(result);
 		}
 		
 		this.pdfConverter.writePdfToResponse(fileRequest, response);
