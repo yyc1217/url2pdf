@@ -20,7 +20,7 @@ public class FromUrlController {
 	@Autowired
 	private IPdfConverter pdfConverter;
 
-	@RequestMapping(value = "/fromUrl", method = RequestMethod.GET)
+	@RequestMapping(value = "/url2pdf", method = RequestMethod.GET)
 	void createPdf(HttpServletResponse response, @Valid @ModelAttribute PDFFileRequest fileRequest, BindingResult result) {
 		
 		if (result.hasErrors()) {
