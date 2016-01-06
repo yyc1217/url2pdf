@@ -6,7 +6,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -31,12 +31,11 @@ public class PdfConverter implements IPdfConverter {
 
 	@Override
 	public void writePdfToResponse(PDFFileRequest fileRequest, HttpServletResponse response) {
+
+		List<String> command = buildCommand(fileRequest);
 		
-		String targetUrl = fileRequest.getTarget();
-
-		List<String> pdfCommand = Arrays.asList("wkhtmltopdf", targetUrl, "-");
-
-		ProcessBuilder pb = new ProcessBuilder(pdfCommand);
+		ProcessBuilder pb = new ProcessBuilder(command);
+		System.out.println(pb.command());
 		Process pdfProcess;
 
 		try {
@@ -58,7 +57,17 @@ public class PdfConverter implements IPdfConverter {
 		}
 	}
 
-	private void writeCreatedPdfFileToResponse(InputStream in, HttpServletResponse response) throws IOException {
+	private List<String> buildCommand(PDFFileRequest fileRequest) {
+        List<String> arguments = fileRequest.getCommandArguments();
+        List<String> command = new ArrayList<>();
+        
+        command.add("wkhtmltopdf");
+        command.addAll(arguments);
+        command.add("-");
+        return command;
+    }
+
+    private void writeCreatedPdfFileToResponse(InputStream in, HttpServletResponse response) throws IOException {
 		OutputStream out = response.getOutputStream();
 		IOUtils.copy(in, out);
 	}

@@ -15,7 +15,7 @@ import cc.ncu.htmltopdf.exception.BadParameterException;
 import cc.ncu.htmltopdf.service.IPdfConverter;
 
 @RestController
-public class FromUrlController {
+public class Url2PdfController {
 
 	@Autowired
 	private IPdfConverter pdfConverter;

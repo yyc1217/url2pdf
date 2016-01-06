@@ -1,8 +1,11 @@
 package cc.ncu.htmltopdf.domain;
 
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.springframework.util.StringUtils.getFilenameExtension;
 import static org.springframework.util.StringUtils.hasText;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -61,10 +64,20 @@ public class PDFFileRequest {
     }
 
     public void setOrientation(String orientation) {
-        for (Orientation orienta : Orientation.values()) {
-            if (equalsIgnoreCase(orienta.name(), orientation)) {
-                this.orientation = orienta;
-            }
-        }
+        Orientation.valueOf(lowerCase(orientation));
+    }
+
+    /**
+     * @see http://wkhtmltopdf.org/usage/wkhtmltopdf.txt
+     * @return
+     */
+    public List<String> getCommandArguments() {
+        List<String> arguments = new ArrayList<>();
+        
+        arguments.add("--orientation");
+        arguments.add(this.orientation.name());
+        arguments.add(this.target);
+        
+        return arguments;
     }
 }
