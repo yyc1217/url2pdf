@@ -1,9 +1,12 @@
 package cc.ncu.htmltopdf.controller;
 
+import static cc.ncu.htmltopdf.config.RequestMappingPath.url2pdf;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +23,8 @@ public class Url2PdfController {
 	@Autowired
 	private IPdfConverter pdfConverter;
 
-	@RequestMapping(value = "/url2pdf", method = RequestMethod.GET)
+    @PreAuthorize("@NCUTargetUrlVerifier.isTargetToNCU(#fileRequest.target)")
+	@RequestMapping(value = url2pdf, method = RequestMethod.GET)
 	void createPdf(HttpServletResponse response, @Valid @ModelAttribute PDFFileRequest fileRequest, BindingResult result) {
 		
 		if (result.hasErrors()) {
