@@ -35,7 +35,6 @@ public class PdfConverter implements IPdfConverter {
 		List<String> command = buildCommand(fileRequest);
 		
 		ProcessBuilder pb = new ProcessBuilder(command);
-		System.out.println(pb.command());
 		Process pdfProcess;
 
 		try {

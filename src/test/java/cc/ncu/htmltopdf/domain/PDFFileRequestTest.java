@@ -40,6 +40,9 @@ public class PDFFileRequestTest {
 	    request.setViewport("x");
 	    
 	    assertTrue(isViolate(request, "viewport"));
+	    
+	    request.setViewport("1024x768 | sudo rm -rf /");
+	    assertTrue(isViolate(request, "viewport"));
 	}
 	
 	private Boolean isViolate(PDFFileRequest request, String property) {
