@@ -1,6 +1,6 @@
 package cc.ncu.htmltopdf.domain;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
@@ -23,19 +23,30 @@ public class PDFFileRequestTest {
 	
 	@Test
 	public void targetUrlShouldNotNull() {
-		Set<ConstraintViolation<PDFFileRequest>> violations = validator.validate(new PDFFileRequest());
-		ConstraintViolation<PDFFileRequest> violation = violations.iterator().next();
-		
-		assertEquals(1, violations.size());
-		assertEquals("target", violation.getPropertyPath().toString());
+        assertTrue(isViolate(new PDFFileRequest(), "target"));
 	}
 	
 	@Test
-	public void shouldAlwaysHasExtension() {
+	public void extensionShouldAlwaysExists() {
 		PDFFileRequest request = new PDFFileRequest();
 		request.setFilename("test");
 		
 		assertTrue(StringUtils.endsWithIgnoreCase(request.getFilename(), ".pdf"));
 	}
 
+	@Test
+	public void viewportShouldMatchPattern() {
+	    PDFFileRequest request = new PDFFileRequest();
+	    request.setViewport("x");
+	    
+	    assertTrue(isViolate(request, "viewport"));
+	}
+	
+	private Boolean isViolate(PDFFileRequest request, String property) {
+	    Set<ConstraintViolation<PDFFileRequest>> violations = validator.validate(request);
+	    return violations.stream().filter(constr -> {
+            return property.equalsIgnoreCase(constr.getPropertyPath().toString());
+        }).findAny().isPresent();
+	}
+	
 }

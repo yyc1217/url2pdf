@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import cc.ncu.htmltopdf.enums.Orientation;
@@ -21,6 +22,8 @@ public class PDFFileRequest {
     
     private static final PageSize DEFAULT_PAGESIZE = PageSize.A4;
     
+    private static final String DEFAULT_VIEWPORT = "1280X1024";
+    
     @NotNull
     private String target;
 
@@ -31,10 +34,14 @@ public class PDFFileRequest {
     
     private PageSize pageSize;
 
+    @Pattern(regexp = "\\d+x\\d+")
+    private String viewport;
+    
     public PDFFileRequest() {
         this.filename = DEFAULT_FILENAME;
         this.orientation = DEFAULT_ORIENTATION;
         this.pageSize = DEFAULT_PAGESIZE;
+        this.viewport = DEFAULT_VIEWPORT;
     }
 
     public String getTarget() {
@@ -87,6 +94,14 @@ public class PDFFileRequest {
         PageSize.valueOf(upperCase(pageSize));
     }
     
+    public void setViewport(String viewport) {
+        this.viewport = viewport;
+    }
+    
+    public String getViewport() {
+        return this.viewport;
+    }
+    
     /**
      * @see http://wkhtmltopdf.org/usage/wkhtmltopdf.txt
      * @return
@@ -99,6 +114,9 @@ public class PDFFileRequest {
         
         arguments.add("--page-size");
         arguments.add(this.pageSize.name());
+        
+        arguments.add("--viewport-size");
+        arguments.add(this.viewport);
         
         arguments.add(this.target);
         
