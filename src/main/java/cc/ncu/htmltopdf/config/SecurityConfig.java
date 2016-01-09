@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 
-import cc.ncu.htmltopdf.security.RestrictedTargetIpPrefixVerifyFilter;
+import cc.ncu.htmltopdf.security.AcceptTargetIpPrefixVerifyFilter;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -16,7 +16,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
         
-            .addFilterBefore(new RestrictedTargetIpPrefixVerifyFilter(), ChannelProcessingFilter.class)
+            .addFilterBefore(new AcceptTargetIpPrefixVerifyFilter(), ChannelProcessingFilter.class)
         
             .authorizeRequests()
                 .antMatchers(url2pdf).anonymous()
