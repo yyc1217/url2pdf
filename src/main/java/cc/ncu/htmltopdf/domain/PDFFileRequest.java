@@ -1,5 +1,6 @@
 package cc.ncu.htmltopdf.domain;
 
+import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.springframework.util.StringUtils.getFilenameExtension;
 import static org.springframework.util.StringUtils.hasText;
@@ -22,7 +23,7 @@ public class PDFFileRequest {
     
     private static final PageSize DEFAULT_PAGESIZE = PageSize.A4;
     
-    private static final String DEFAULT_VIEWPORT = "1280X1024";
+    private static final String DEFAULT_VIEWPORT = "800x600";
     
     @NotNull
     private String target;
@@ -34,7 +35,7 @@ public class PDFFileRequest {
     
     private PageSize pageSize;
 
-    @Pattern(regexp = "\\d+x\\d+")
+    @Pattern(regexp = "\\d+[xX]\\d+")
     private String viewport;
     
     public PDFFileRequest() {
@@ -95,7 +96,7 @@ public class PDFFileRequest {
     }
     
     public void setViewport(String viewport) {
-        this.viewport = viewport;
+        this.viewport = lowerCase(viewport);
     }
     
     public String getViewport() {
