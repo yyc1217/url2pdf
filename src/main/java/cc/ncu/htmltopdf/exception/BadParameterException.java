@@ -16,6 +16,10 @@ public class BadParameterException extends IllegalArgumentException {
         this.result = result;
     }
 
+    public BadParameterException(String forbiddenMessage) {
+        super(forbiddenMessage);
+    }
+
     public BindingResult getResult() {
         return result;
     }
