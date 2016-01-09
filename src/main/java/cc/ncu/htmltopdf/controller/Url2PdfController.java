@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +22,6 @@ public class Url2PdfController {
 	@Autowired
 	private IPdfConverter pdfConverter;
 
-    @PreAuthorize("@NCUTargetUrlVerifier.isTargetToNCU(#fileRequest.target)")
 	@RequestMapping(value = url2pdf, method = RequestMethod.GET)
 	void createPdf(HttpServletResponse response, @Valid @ModelAttribute PDFFileRequest fileRequest, BindingResult result) {
 		
