@@ -26,7 +26,7 @@ public class PdfConverter implements IPdfConverter {
 
 	private static final Logger logger = LoggerFactory.getLogger(PdfConverter.class);
 	
-	@Value("${wait.seconds}")
+	@Value("${pdf.creation.wait.seconds}")
 	private Integer waitSeconds;
 
 	@Override
