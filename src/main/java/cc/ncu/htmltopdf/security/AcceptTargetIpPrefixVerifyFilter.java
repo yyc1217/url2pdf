@@ -23,27 +23,31 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-import cc.ncu.htmltopdf.exception.BadParameterException;
+import cc.ncu.htmltopdf.exception.ErrorMessage;
 
 @Component
 public class AcceptTargetIpPrefixVerifyFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(AcceptTargetIpPrefixVerifyFilter.class);
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+    
     private static final String ACCEPT_TARGET_IP_FILENAME = "acceptTargetIp.txt";
 
     private Set<String> acceptTargetIps = Collections.emptySet();
 
-    private String forbiddenMessage = "%s is not a valid url or resolved ip is not allowed, acceptable ip prefixes  %s";
+    private String forbiddenMessage = "%s is not a valid url or resolved ip is not allowed, acceptable ip prefixes %s";
     
     private LoadingCache<String, Boolean> cachedTargetIpVerifyResult;
     
@@ -98,7 +102,7 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
             String address = inetAddress.getHostAddress();
             return acceptTargetIps.parallelStream().anyMatch(ip -> startsWith(address, ip));
         } catch (UnknownHostException e) {
-            logger.error("Verify target url failed.", e);
+            logger.error("Verify target url failed, reason {}", e.getMessage());
         }
         return false;
     }
@@ -109,17 +113,26 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
 
         HttpServletRequest req = (HttpServletRequest) request;
 
-        boolean hasTargetUrlPath = req.getRequestURI().contains(url2pdf);
-
-        if (hasTargetUrlPath) {
+        if (hasTargetUrlPath(req)) {
 
             String target = req.getParameter("target");
             if (!isValidTarget(target)) {
-                throw new BadParameterException(asForbiddenMessage(target));            
+                writeErrorToResponse(target, response);
+                return;
             }
         }
 
         chain.doFilter(request, response);
+    }
+
+    private void writeErrorToResponse(String target, ServletResponse response) throws IOException {
+        ErrorMessage errorMessage = new ErrorMessage("target", asForbiddenMessage(target));
+        String messageString = mapper.writeValueAsString(errorMessage);
+        IOUtils.write(messageString, response.getOutputStream());
+    }
+
+    private boolean hasTargetUrlPath(HttpServletRequest req) {
+        return req.getRequestURI().contains(url2pdf);
     }
 
     private Boolean isValidTarget(String target) {

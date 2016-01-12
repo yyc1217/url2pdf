@@ -13,6 +13,7 @@ public class BadParameterException extends IllegalArgumentException {
     }
     
     public BadParameterException(BindingResult result) {
+        super(result.getFieldErrors().toString());
         this.result = result;
     }
 
