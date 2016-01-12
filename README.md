@@ -54,6 +54,7 @@ target-service.com should **sign** this url by hmac function from its private ke
 
 ```
 http://example.com/url2pdf?target=http://target-service.com/private-page.html&viewport=1280x1024&timestamp=1452609375&hash=2a1d7c2f78783913492e86730a4aaf1c9a71033e
+                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
 Then target-service.com should verify request from url2pdf by calculating hash value using hmac function above, check calculated hash value is match the hash value append from request.
 > Of course, in this scenario private-page.html should allow any ip to access or protected by firewall, vpn...etc.
