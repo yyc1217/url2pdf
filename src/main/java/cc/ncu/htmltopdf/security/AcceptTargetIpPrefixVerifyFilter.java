@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +28,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,11 +47,16 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
 
     private static final ObjectMapper mapper = new ObjectMapper();
     
-    private static final String ACCEPT_TARGET_IP_FILENAME = "acceptTargetIp.txt";
+    @Value("${accept.target.ip.filename}")
+    private String acceptTargetIpFilename;
 
+    @Value("${target.forbidden.message}")
+    private String forbiddenessage;
+    
+    @Autowired
+    private MessageSource messageSource;
+    
     private Set<String> acceptTargetIps = Collections.emptySet();
-
-    private String forbiddenMessage = "%s is not a valid url or resolved ip is not allowed, acceptable ip prefixes %s";
     
     private LoadingCache<String, Boolean> cachedTargetIpVerifyResult;
     
@@ -59,7 +68,7 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
     private void readAcceptTargetIps() {
         
         try (
-                InputStream in = getClass().getClassLoader().getResourceAsStream(ACCEPT_TARGET_IP_FILENAME);
+                InputStream in = getClass().getClassLoader().getResourceAsStream(acceptTargetIpFilename);
                 BufferedReader buffer = new BufferedReader(new InputStreamReader(in))
         ) {
 
@@ -126,7 +135,7 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
     }
 
     private void writeErrorToResponse(String target, ServletResponse response) throws IOException {
-        ErrorMessage errorMessage = new ErrorMessage("target", asForbiddenMessage(target));
+        ErrorMessage errorMessage = new ErrorMessage("target", asForbiddenMessage(target, response.getLocale()));
         String messageString = mapper.writeValueAsString(errorMessage);
         IOUtils.write(messageString, response.getOutputStream());
     }
@@ -139,8 +148,8 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
         return cachedTargetIpVerifyResult.getUnchecked(target);
     }
     
-    private String asForbiddenMessage(String target) {
-       return String.format(forbiddenMessage, target, acceptTargetIps);
+    private String asForbiddenMessage(String target, Locale locale) {
+       return this.messageSource.getMessage("target.forbidden.message", new Object[]{target, acceptTargetIps}, locale);
     }
     
     @Override
