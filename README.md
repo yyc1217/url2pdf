@@ -15,13 +15,13 @@ Execute ``./gradlew build`` at command line interface, then packaged war file wi
 Or just ``./gradlew bootRun``.
 
 ## Usages
-```{hostname}/url2pdf?target=www.google.com.tw```
+``http://example.com/url2pdf?target=www.google.com.tw``
 
 
 There are two possible usages:
 
-1. **proxy**: Invoking url above programmatically via http or https protocol, read converted result from service response's body, then send back to clients.
-2. **direct**: Add a link tag in html, make clients invoking url above from their browser directly, see [Abuse Prevention](#abuse-prevention--privacy)
+  1. **proxy**: Invoking url above programmatically via http or https protocol, read converted result from service response's body, then send back to clients. ``[clients] ���� [your services] ���� [url2pdf]``
+  2. **direct**: Add a link tag in html, make clients invoking url above from their browser directly, see [Abuse Prevention](#abuse-prevention--privacy). ``[clients] ���� [url2pdf]``
 
 ## Query Parameters
 | Name        | Enums                                                                                         | Example           | Required | Default    | wkhtmltopdf option |
@@ -36,7 +36,7 @@ There are two possible usages:
 ## Restrict IP
 **url2pdf** is not for public purpose but as a organization microservice, so please specify at least one ip prefix of your organization in [accept.target.ips.txt](src/main/resources/accept.target.ips.txt). 
 
-**url2pdf** will reject any request by default if it can't find any specify ip prefixes.
+**url2pdf** will reject any requests by default if it can't find any specify ip prefixes.
 
 ## Abuse Prevention & Privacy
 It's fine if you let your users convert a public page by their browser directly, but it may cause abuse issues from malicious users. Or you want your users convert a private page which needs some authentications before access. One possible solution is [Hash-based_message_authentication_code](https://en.wikipedia.org/wiki/Hash-based_message_authentication_code).
@@ -47,16 +47,17 @@ Simply says, your service should **sign** the requested url, give it to your use
 
 For example, you want your users get a pdf file by converting http://target-service.com/private-page.html, so we will have
 ```
-url2pdf.com/url2pdf?target=http://target-service.com/private-page.html&viewport=1280x1024&timestamp=1452609375
+http://example.com/url2pdf?target=http://target-service.com/private-page.html&viewport=1280x1024&timestamp=1452609375
 ```
-target service should **sign** this url by hmac function from its private key, append calculated hash:
+target-service.com should **sign** this url by hmac function from its private key, append calculated hash:
 > 2a1d7c2f78783913492e86730a4aaf1c9a71033e = hmac(target, viewport, timestamp, private key)
 
 ```
-url2pdf.com/url2pdf?target=http://target-service.com/private-page.html&viewport=1280x1024&timestamp=1452609375&**hash=2a1d7c2f78783913492e86730a4aaf1c9a71033e**
+http://example.com/url2pdf?target=http://target-service.com/private-page.html&viewport=1280x1024&timestamp=1452609375&hash=2a1d7c2f78783913492e86730a4aaf1c9a71033e
+                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
-target service should verify request from url2pdf invoked by users by repeat hmac function above, check calculated hash is match the hash from request.
-> Of course, in this scenario private-page.html should allow any ip to access.
+Then target-service.com should verify request from url2pdf by calculating hash value using hmac function above, check calculated hash value is match the hash value append from request.
+> Of course, in this scenario private-page.html should allow any ip to access or protected by firewall, vpn...etc.
 
 ## Fonts
 It might render incorrectly or blank due to lack of fonts required by html(i.e. Chinese, Japanese or special sympols). Add required fonts to OS or using css web fonts are two possible solutions.
