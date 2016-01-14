@@ -17,7 +17,7 @@ import cc.ncu.htmltopdf.enums.PageSize;
 
 public class PDFFileRequest {
 
-    private static final String DEFAULT_FILENAME = "result.pdf";
+    static final String DEFAULT_FILENAME = "result.pdf";
 
     private static final Orientation DEFAULT_ORIENTATION = Orientation.PORTRAIT;
     
@@ -80,7 +80,7 @@ public class PDFFileRequest {
     }
 
     public void setOrientation(String orientation) {
-        Orientation.valueOf(upperCase(orientation));
+        this.orientation = Orientation.valueOf(upperCase(orientation));
     }
 
     public PageSize getPageSize() {
