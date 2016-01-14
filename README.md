@@ -20,8 +20,8 @@ Or just ``./gradlew bootRun``.
 
 There are two possible usages:
 
-  1. **proxy**: Invoking url above programmatically via http or https protocol, read converted result from service response's body, then send back to clients. ``[clients] ���� [your services] ���� [url2pdf]``
-  2. **direct**: Add a link tag in html, make clients invoking url above from their browser directly, see [Abuse Prevention](#abuse-prevention--privacy). ``[clients] ���� [url2pdf]``
+  1. **proxy**: Invoking url above programmatically via http or https protocol, read converted result from service response's body, then send back to clients. ``[clients] <--> [our services] <--> [url2pdf]``
+  2. **direct**: Add a link tag in html, make clients invoking url above from their browser directly, see [Abuse Prevention](#abuse-prevention--privacy). ``[clients] <--> [url2pdf]``
 
 ## Query Parameters
 | Name        | Enums                                                                                         | Example           | Required | Default    | wkhtmltopdf option |
