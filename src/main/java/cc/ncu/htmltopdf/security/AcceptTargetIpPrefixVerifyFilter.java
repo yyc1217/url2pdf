@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -49,9 +50,6 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
     
     @Value("${accept.target.ip.filename}")
     private String acceptTargetIpFilename;
-
-    @Value("${target.forbidden.message}")
-    private String forbiddenessage;
     
     @Autowired
     private MessageSource messageSource;
@@ -61,12 +59,11 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
     private LoadingCache<String, Boolean> cachedTargetIpVerifyResult;
     
     public AcceptTargetIpPrefixVerifyFilter() {
-        readAcceptTargetIps();
         cachedTargetIpVerifyResult = buildCachedTargetIps();
     }
 
-    private void readAcceptTargetIps() {
-        
+    @PostConstruct
+    void readAcceptTargetIps() {
         try (
                 InputStream in = getClass().getClassLoader().getResourceAsStream(acceptTargetIpFilename);
                 BufferedReader buffer = new BufferedReader(new InputStreamReader(in))
