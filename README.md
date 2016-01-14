@@ -63,4 +63,4 @@ Then target-service.com should verify request from url2pdf by calculating hash v
 It might render incorrectly or blank due to lack of fonts required by html(i.e. Chinese, Japanese or special sympols). Add required fonts to OS or using css web fonts are two possible solutions.
 
 ## Acknowledge
-This url2pdf idea is from an article [Spring From the Trenches: Creating PDF Documents With Wkhtmltopdf](http://www.petrikainulainen.net/programming/spring-framework/spring-from-the-trenches-creating-pdf-documents-with-wkhtmltopdf).
+This url2pdf idea is inspired by an article [Spring From the Trenches: Creating PDF Documents With Wkhtmltopdf](http://www.petrikainulainen.net/programming/spring-framework/spring-from-the-trenches-creating-pdf-documents-with-wkhtmltopdf).
