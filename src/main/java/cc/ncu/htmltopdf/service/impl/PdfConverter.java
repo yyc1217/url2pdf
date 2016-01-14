@@ -56,7 +56,7 @@ public class PdfConverter implements IPdfConverter {
 		}
 	}
 
-	private List<String> buildCommand(PDFFileRequest fileRequest) {
+	List<String> buildCommand(PDFFileRequest fileRequest) {
         List<String> arguments = fileRequest.getCommandArguments();
         List<String> command = new ArrayList<>();
         
