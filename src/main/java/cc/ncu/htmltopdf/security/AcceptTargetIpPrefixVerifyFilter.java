@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Locale;
@@ -95,7 +97,7 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
         return CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build(loader);
     }
     
-    private Boolean isAcceptableTarget(String target) {
+    protected Boolean isAcceptableTarget(String target) {
 
         logger.info("Verifying target url: {}", target);
         
@@ -103,15 +105,23 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
             return false;
         }
         
+        target = target.toLowerCase();
+        if (!StringUtils.startsWithAny(target, "http://", "https://")) {
+            target = "http://" + target;
+        }        
+        
         try {
-            InetAddress inetAddress = InetAddress.getByName(target);
-            String address = inetAddress.getHostAddress();
-            return acceptTargetIps.parallelStream().anyMatch(ip -> startsWith(address, ip));
-        } catch (UnknownHostException e) {
+            URI url = new URI(target);
+            InetAddress inetAddress = InetAddress.getByName(url.getHost());
+            String ip = inetAddress.getHostAddress();
+            logger.debug("target: {}, ip: {}", target, ip);
+            return acceptTargetIps.parallelStream().anyMatch(acceptablePrefix -> startsWith(ip, acceptablePrefix));
+        } catch (UnknownHostException | URISyntaxException e) {
             logger.error("Verify target url failed, reason {}", e.getMessage());
         }
         return false;
     }
+
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
