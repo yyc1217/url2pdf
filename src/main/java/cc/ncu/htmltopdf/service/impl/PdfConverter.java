@@ -1,11 +1,11 @@
 package cc.ncu.htmltopdf.service.impl;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.google.common.net.MediaType;
+
 import cc.ncu.htmltopdf.domain.PDFFileRequest;
 import cc.ncu.htmltopdf.service.IPdfConverter;
 
@@ -25,6 +27,10 @@ import cc.ncu.htmltopdf.service.IPdfConverter;
 public class PdfConverter implements IPdfConverter {
 
 	private static final Logger logger = LoggerFactory.getLogger(PdfConverter.class);
+	
+	private static final String UTF_8 = "UTF-8";
+	
+	private static final String ISO_8859_1 = "ISO-8859-1";
 	
 	@Value("${pdf.creation.wait.seconds}")
 	private Integer waitSeconds;
@@ -85,9 +91,12 @@ public class PdfConverter implements IPdfConverter {
 		}
 	}
 
-	private void setResponseHeaders(HttpServletResponse response, PDFFileRequest fileRequest) {
-		response.setContentType(APPLICATION_JSON_UTF8.getType());
-		response.setHeader(CONTENT_DISPOSITION, "attachment; filename=\"" + fileRequest.getFilename() + "\"");
+	private void setResponseHeaders(HttpServletResponse response, PDFFileRequest fileRequest) throws UnsupportedEncodingException {
+		response.setContentType(MediaType.PDF.withParameter("charset", UTF_8).toString());
+		response.setCharacterEncoding(UTF_8);
+		
+		String filename = new String(fileRequest.getFilename().getBytes(UTF_8), ISO_8859_1);
+		response.setHeader(CONTENT_DISPOSITION, "attachment; filename=" + filename);
 	}
 
 	private void writeErrorMessageToLog(Exception ex, Process pdfProcess) throws IOException {
