@@ -11,13 +11,12 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse-wtp'
+apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot' 
-apply plugin: 'war'
 
 
-war {
+jar {
 	baseName = 'url2pdf'
 	version = '0.0.1-SNAPSHOT'
 }
@@ -42,9 +41,9 @@ dependencies {
     
     compile('com.google.guava:guava:19.0')
     
-    
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
-	testCompile('org.springframework.boot:spring-boot-starter-test') 
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.mockito:mockito-core:2.0.36-beta')	 
 }
 
 
