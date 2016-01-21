@@ -16,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
 
@@ -40,8 +41,15 @@ public class AcceptTargetIpPrefixVerifyFilterTest {
     }
     
     private Cache<String, Boolean> mockCache() {
-        Cache<String, Boolean> mockCache = CacheBuilder.newBuilder().build();
+        CacheLoader<String, Boolean> loader = new CacheLoader<String, Boolean>() {
+            @Override
+            public Boolean load(String url) {
+                return true;
+            }
+        };
+        Cache<String, Boolean> mockCache = CacheBuilder.newBuilder().build(loader);
         mockCache.put("www.test.target.com.tw", true);
+
         return mockCache;
     }
     
