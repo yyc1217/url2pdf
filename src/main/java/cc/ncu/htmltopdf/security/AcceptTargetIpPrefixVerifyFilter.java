@@ -14,7 +14,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -129,7 +128,7 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
 
         HttpServletRequest req = (HttpServletRequest) request;
 
-        if (hasTargetUrlPath(req)) {
+        if (isUrl2Pdf(req)) {
 
             String target = req.getParameter("target");
             if (!isValidTarget(target)) {
@@ -142,21 +141,21 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
     }
 
     private void writeErrorToResponse(String target, ServletResponse response) throws IOException {
-        ErrorMessage errorMessage = new ErrorMessage("target", asForbiddenMessage(target, response.getLocale()));
+        ErrorMessage errorMessage = new ErrorMessage("target", asForbiddenMessage(target));
         String messageString = mapper.writeValueAsString(errorMessage);
         IOUtils.write(messageString, response.getOutputStream());
     }
 
-    private boolean hasTargetUrlPath(HttpServletRequest req) {
-        return req.getRequestURI().contains(url2pdf);
+    protected boolean isUrl2Pdf(HttpServletRequest req) {
+        return "GET".equals(req.getMethod()) && req.getRequestURI().contains(url2pdf);
     }
 
     private Boolean isValidTarget(String target) {
         return cachedTargetIpVerifyResult.getUnchecked(target);
     }
     
-    private String asForbiddenMessage(String target, Locale locale) {
-       return this.messageSource.getMessage("target.forbidden.message", new Object[]{target, acceptTargetIps}, locale);
+    private String asForbiddenMessage(String target) {
+       return this.messageSource.getMessage("target.forbidden.message", new Object[]{target, acceptTargetIps}, null);
     }
     
     @Override

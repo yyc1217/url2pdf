@@ -1,54 +1,54 @@
 package cc.ncu.htmltopdf.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.ServletException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
 
-@RunWith(value = Parameterized.class)
 public class AcceptTargetIpPrefixVerifyFilterTest {
 
     private AcceptTargetIpPrefixVerifyFilter filter;
     
-    private String target;
+    private MockFilterChain mockChain;
     
-    private boolean expectedResult;
+    private MockHttpServletRequest req;
     
-    public AcceptTargetIpPrefixVerifyFilterTest(String target, boolean expectedResult) {
-        this.target = target;
-        this.expectedResult = expectedResult;
-    }
+    private MockHttpServletResponse res;
     
     @Before
     public void setUp() throws Exception {
         filter = new AcceptTargetIpPrefixVerifyFilter();
-        ReflectionTestUtils.setField(filter, "acceptTargetIps", Sets.newHashSet("140.115"));
+        
+        ReflectionTestUtils.setField(filter, "cachedTargetIpVerifyResult", mockCache());
+        
+        mockChain = new MockFilterChain();
+        res = new MockHttpServletResponse();
     }
-
-    @Parameters(name = "{index}: {0} is valid url: {1}")
-    public static Iterable<Object[]> data1() {
-        return Arrays.asList(new Object[][] { 
-            { "https://portal.ncu.edu.tw/login", true}, 
-            { "http://portal.ncu.edu.tw/login", true},
-            { "www.ncu.edu.tw", true},
-            { "www.google.com.tw", false},
-            { "www", false},
-            { " ", false}
-        });
+    
+    private Cache<String, Boolean> mockCache() {
+        Cache<String, Boolean> mockCache = CacheBuilder.newBuilder().build();
+        mockCache.put("www.test.target.com.tw", true);
+        return mockCache;
     }
     
     @Test
-    public void testIsAcceptableIp() {
-        boolean actualResult = filter.isAcceptableTarget(this.target);
-        assertEquals(expectedResult, actualResult);
+    public void testIsUrl2Pdf() throws IOException, ServletException {
+        req = new MockHttpServletRequest("GET", "/url2pdf?target=www.test.target.com.tw");
+        assertTrue(filter.isUrl2Pdf(req));
     }
 
 }
