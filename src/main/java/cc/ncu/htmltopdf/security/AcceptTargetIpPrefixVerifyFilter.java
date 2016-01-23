@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -141,7 +142,7 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
     }
 
     private void writeErrorToResponse(String target, ServletResponse response) throws IOException {
-        ErrorMessage errorMessage = new ErrorMessage("target", asForbiddenMessage(target));
+        ErrorMessage errorMessage = new ErrorMessage("target", asForbiddenMessage(target, response.getLocale()));
         String messageString = mapper.writeValueAsString(errorMessage);
         IOUtils.write(messageString, response.getOutputStream());
     }
@@ -154,8 +155,8 @@ public class AcceptTargetIpPrefixVerifyFilter implements Filter {
         return cachedTargetIpVerifyResult.getUnchecked(target);
     }
     
-    private String asForbiddenMessage(String target) {
-       return this.messageSource.getMessage("target.forbidden.message", new Object[]{target, acceptTargetIps}, null);
+    private String asForbiddenMessage(String target, Locale locale) {
+        return this.messageSource.getMessage("target.forbidden.message", new Object[]{target, acceptTargetIps}, locale);
     }
     
     @Override
