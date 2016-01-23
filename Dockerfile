@@ -1,4 +1,4 @@
-FROM java:8
+FROM java:8-jre
 MAINTAINER Yeh-Yung <yyc1217@gmail.com>
 
 RUN apt-get update
