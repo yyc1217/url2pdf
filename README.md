@@ -7,7 +7,7 @@ A simple service that convert target url to pdf via http or https protocol by in
 You have to install wkhtmltopdf first, otherwise url2pdf won't startup successful. Follow the instructions from [wkhtmltopdf](http://wkhtmltopdf.org) based on your operating system.
 
 ### java 1.8
-This service is developed under java 1.8.
+This service requires java 1.8.
 
 ## Running
 Execute ``./gradlew build`` at command line interface, then packaged war file will be build/libs, deploy the war file to any java container, i.e. Tomcat, JBoss.
