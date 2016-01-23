@@ -62,5 +62,10 @@ Then target-service.com should verify request from url2pdf by calculating hash v
 ## Fonts
 It might render incorrectly or blank due to lack of fonts required by html(i.e. Chinese, Japanese or special sympols). Add required fonts to OS or using css web fonts are two possible solutions.
 
+## Docker
+  1. Build docker image: ``sudo docker build -t url2pdf .``
+  2. Run docker container: ``sudo docker run -d -p 8080:8080 --name url2pdf url2pdf``
+  3. (optional) Delete``RUN apt-get install -y ttf-wqy-microhei`` if you don't need tranditional chinese fonts.
+
 ## Acknowledge
 This url2pdf idea is inspired by an article [Spring From the Trenches: Creating PDF Documents With Wkhtmltopdf](http://www.petrikainulainen.net/programming/spring-framework/spring-from-the-trenches-creating-pdf-documents-with-wkhtmltopdf).
